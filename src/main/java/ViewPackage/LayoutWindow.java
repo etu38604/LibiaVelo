@@ -91,8 +91,8 @@ public class LayoutWindow extends JFrame {
                 if (e.getSource() == insert)
                 {
                     EmployeeModel employeeModel = new EmployeeModel();
-
-                    insert1Panel = new Insert1Panel(LayoutWindow.this,employeeModel);
+                    Boolean upDateBoll = false;
+                    insert1Panel = new Insert1Panel(LayoutWindow.this,employeeModel,upDateBoll);
                 }
                 if (e.getSource() == searchItem)
                     searchPanel = new SearchPanel(LayoutWindow.this);

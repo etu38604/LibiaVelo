@@ -12,6 +12,7 @@ public class StationModel {
     private String labelStation;
     private String coordGPS;
     private String street;
+    private String zone;
     private GregorianCalendar dateCreation;
     private Boolean isCover;
     private LocalityModel localityModel;
@@ -104,5 +105,13 @@ public class StationModel {
 
     public void setLocalityModel(LocalityModel LocalityModel) {
         this.localityModel = LocalityModel;
+    }
+
+    public String getZone() {
+        return zone;
+    }
+
+    public void setZone(String zone) {
+        this.zone = zone;
     }
 }

@@ -1,13 +1,18 @@
 package ViewPackage;
 
 import DataAccessPackage.EmployeeDataAccess;
+import DataAccessPackage.LocalityDataAccess;
 import ExceptionPackage.ConnectionException;
 import ModelPackage.EmployeeModel;
+import ModelPackage.LocalityModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Insert1Panel extends JPanel {
 
@@ -19,18 +24,67 @@ public class Insert1Panel extends JPanel {
     private JComboBox cityCombo;
     private JPanel panelBoutton, panelIdentifiant, panelInformations,northPanel,titlePanel;
     private LayoutWindow layoutWindow;
-    private WelcomePanel welcomePanel;
     private EmployeeModel employeeData;
-    private EmployeeDataAccess employeeDataAccess;
+    private ArrayList<LocalityModel> listLocality;
+    private ArrayList<EmployeeModel> employeeArray;
+    private String id,lastName,firstName,initialName,email,phonePrivate,street,streetNumber,locality;
+    private Boolean updateBool;
+    private SpinnerDateModel birthday;
+    private GregorianCalendar birthdayGreg;
+    private Date birthdayDate;
+    private LocalityModel localitySelect;
+    private LocalityDataAccess localityDataAccess;
 
-    public Insert1Panel(LayoutWindow layoutWindow,EmployeeModel employeeListing) throws ConnectionException{
+
+    public Insert1Panel(LayoutWindow layoutWindow,EmployeeModel employeeListing,Boolean updateBool) throws ConnectionException{
 
         this.layoutWindow = layoutWindow;
         container = layoutWindow.getContentPane();
         container.removeAll();
 
         EmployeeDataAccess employeeDataAccess = new EmployeeDataAccess();
-        employeeData = employeeDataAccess.getEmployee(2);
+
+
+
+        id = new String();
+        lastName = new String();         // Management Update / Insert employee
+        firstName = new String();
+        initialName = new String();
+        email = new String();
+        phonePrivate = new String();
+        street = new String();
+        streetNumber = new String();
+        locality = new String();
+        birthday = new SpinnerDateModel();
+
+
+        this.updateBool = updateBool;
+        this.employeeData = employeeListing;
+
+
+        if (updateBool)
+        {
+
+            id = Integer.toString(employeeData.getIdEmployee());
+            lastName = employeeData.getLastName();
+            firstName = employeeData.getFirstName();
+            initialName = employeeData.getInitialNameSupp();
+            email = employeeData.getMail();
+            phonePrivate = Integer.toString(employeeData.getPhonePrivate());
+            street = employeeData.getStreet();
+            streetNumber = Integer.toString(employeeData.getStreetNumber());
+
+            birthdayDate = new java.sql.Date(employeeData.getBirthday().getTimeInMillis());
+            birthday.setValue(birthdayDate);
+
+            locality = Integer.toString(employeeData.getLocalityModel().getPostalCode())+" "+employeeData.getLocalityModel().getLabelLocality();
+
+        } else
+        {
+            employeeArray = employeeDataAccess.employeeListing();
+            id = Integer.toString(employeeArray.size() + 1);
+        }
+
 
         // Boutons
         panelBoutton = new JPanel();
@@ -60,9 +114,9 @@ public class Insert1Panel extends JPanel {
         idLabel = new JLabel("Identifiant : ");
         idLabel.setHorizontalAlignment(SwingConstants.LEFT);
         panelIdentifiant.add(idLabel);
-        idText = new JTextField(employeeData.getIdEmployee());
+        idText = new JTextField(id);
         idText.setEditable(false);
-        idText.setHorizontalAlignment(SwingConstants.LEFT);
+        idText.setHorizontalAlignment(SwingConstants.CENTER);
         panelIdentifiant.add(idText);
 
         titlePanel = new JPanel();
@@ -80,26 +134,24 @@ public class Insert1Panel extends JPanel {
         panelInformations.setLayout(new GridLayout(9,4,5,5));
 
 
-
-
         lnameLabel = new JLabel("Nom : ");
         lnameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(lnameLabel);
-        lnameText = new JTextField(employeeData.getLastName());
+        lnameText = new JTextField(lastName);
         lnameText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(lnameText);
 
         fnameLabel = new JLabel("Prénom : ");
         fnameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(fnameLabel);
-        fnameText = new JTextField(employeeData.getFirstName());
+        fnameText = new JTextField(firstName);
         fnameText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(fnameText);
 
         inameLabel = new JLabel("Initial prénom(s) supplémetaire(s) : ");
         inameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(inameLabel);
-        inameText = new JTextField(employeeData.getInitialNameSupp());
+        inameText = new JTextField(initialName);
         inameText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(inameText);
 
@@ -107,46 +159,53 @@ public class Insert1Panel extends JPanel {
         birthdayLabel.setHorizontalAlignment(SwingConstants.RIGHT);   //JSpinner Date
         panelInformations.add(birthdayLabel);
         birthdaySpinner = new JSpinner();
-        birthdaySpinner.setModel(new SpinnerDateModel());
+        birthdaySpinner.setModel(birthday);
         JSpinner.DateEditor editor = new JSpinner.DateEditor(birthdaySpinner,"dd/MM/yyyy");
         birthdaySpinner.setEditor(editor);
+
         panelInformations.add(birthdaySpinner);
 
 
         mailLabel = new JLabel("Email : ");
         mailLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(mailLabel);
-        mailText = new JTextField(employeeData.getMail());
+        mailText = new JTextField(email);
         mailText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(mailText);
 
         phoneLabel = new JLabel("Téléphonne : ");
         phoneLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(phoneLabel);
-        phoneText = new JTextField(employeeData.getPhonePrivate());
+        phoneText = new JTextField(phonePrivate);
         phoneText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(phoneText);
 
         cityLabel = new JLabel("Ville : ");
         cityLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(cityLabel);
-        String [] values ={"Namur","Liege"};
-        cityCombo = new JComboBox(values);                                //Combo-Box City
-        cityCombo.setSelectedItem("Namur");
+        localityDataAccess = new LocalityDataAccess();
+        cityCombo = new JComboBox();
+        listLocality = localityDataAccess.getAllLocality();
+        listLocality.forEach((AllLocality) -> {
+            cityCombo.addItem(AllLocality.getPostalCode() +" "+AllLocality.getLabelLocality());
+        });
+                                                                                             //Combo-Box City
+        cityCombo.setSelectedItem(locality);
         cityCombo.setMaximumRowCount(5);
+
         panelInformations.add(cityCombo);
 
         streetLabel = new JLabel("Rue : ");
         streetLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(streetLabel);
-        streetText = new JTextField(employeeData.getStreet());
+        streetText = new JTextField(street);
         streetText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(streetText);
 
         numberLabel = new JLabel("Numéro : ");
         numberLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(numberLabel);
-        numberText = new JTextField(employeeData.getStreetNumber());
+        numberText = new JTextField(streetNumber);
         numberText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(numberText);
 
@@ -172,13 +231,35 @@ public class Insert1Panel extends JPanel {
 
         public void actionPerformed(ActionEvent e) {
 
-            if (e.getSource() == cancel) {
-                WelcomePanel welcomePanel = new WelcomePanel(layoutWindow);
-            }
-            if (e.getSource() == next){
-                Insert2Panel insert2Panel = new Insert2Panel(layoutWindow);
-            }
+           try {
+               if (e.getSource() == cancel) {
+                   WelcomePanel welcomePanel = new WelcomePanel(layoutWindow);
+               }
+               if (e.getSource() == next) {
 
+                   employeeData.setIdEmployee(Integer.parseInt(idText.getText()));
+                   employeeData.setLastName(lnameText.getText());
+                   employeeData.setFirstName(fnameText.getText());
+                   employeeData.setInitialNameSupp(inameText.getText());
+                   employeeData.setMail(mailText.getText());
+                   employeeData.setPhonePrivate(Integer.parseInt(phoneText.getText()));
+                   employeeData.setStreet(streetText.getText());
+                   employeeData.setStreetNumber(Integer.parseInt(numberText.getText()));
+
+                   localitySelect = localityDataAccess.getLocality(cityCombo.getSelectedIndex() + 1);
+                   employeeData.setLocalityModel(localitySelect);
+
+                   birthdayGreg = new GregorianCalendar();
+                   birthdayGreg.setTime((Date) birthdaySpinner.getValue());
+                   employeeData.setBirthday(birthdayGreg);
+
+                   Insert2Panel insert2Panel = new Insert2Panel(layoutWindow, employeeData);
+
+               }
+           } catch (ConnectionException ex)
+           {
+               System.out.println("Erreur de connexion : " + ex);
+           }
         }
     }
 }

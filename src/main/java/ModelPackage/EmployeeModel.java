@@ -1,7 +1,6 @@
 package ModelPackage;
 
 import java.util.GregorianCalendar;
-import java.util.List;
 
 public class EmployeeModel {
 
@@ -19,7 +18,7 @@ public class EmployeeModel {
     private GregorianCalendar birthday;
     private Boolean isPartTimeWork;
     private Boolean isDriverSpecialLicense;
-    private Boolean isZoneInCharge;
+    private Boolean isLeader;
     private LocalityModel localityModel;
     private StationModel stationModel;
     private WorkShopModel workShopModel;
@@ -132,12 +131,12 @@ public class EmployeeModel {
         isDriverSpecialLicense = driverSpecialLicense;
     }
 
-    public Boolean getZoneInCharge() {
-        return isZoneInCharge;
+    public Boolean getLeader() {
+        return isLeader;
     }
 
-    public void setZoneInCharge(Boolean zoneInCharge) {
-        isZoneInCharge = zoneInCharge;
+    public void setLeader(Boolean leader) {
+        isLeader = leader;
     }
 
 

@@ -93,11 +93,23 @@ public class ListingPanel extends JPanel {
                 if (e.getSource() == cancelButton) {
                     WelcomePanel welcomePanel = new WelcomePanel(layoutWindow);
                 }
+
                 if (e.getSource() == deleteButton) {
-                    String idEmployee = listTable.getValueAt(listTable.getSelectedRow(), 0).toString();
-                    EmployeeModel employeeDelete = employeeDataAccess.getEmployee(2);
-                    System.out.println(employeeDelete.getLastName());
-                    DeletePanel DeletePanel = new DeletePanel(layoutWindow,employeeDelete);
+                    Integer idEmployee = (Integer) listTable.getValueAt(listTable.getSelectedRow(), 0);
+                    employeeDelete = new EmployeeModel();
+                    employeeDataAccess = new EmployeeDataAccess();
+                    employeeDelete = employeeDataAccess.getEmployee(idEmployee);
+                    DeletePanel deletePanel = new DeletePanel(layoutWindow,employeeDelete);
+                }
+
+                if (e.getSource() == updateButton) {
+
+                    Integer idEmployee = (Integer) listTable.getValueAt(listTable.getSelectedRow(), 0);
+                    employeeDelete = new EmployeeModel();
+                    employeeDataAccess = new EmployeeDataAccess();
+                    employeeDelete = employeeDataAccess.getEmployee(idEmployee);
+                    Insert1Panel insert1Panel = new Insert1Panel(layoutWindow,employeeDelete,true);
+
                 }
 
             } catch (ConnectionException ex) {

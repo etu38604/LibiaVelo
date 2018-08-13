@@ -79,7 +79,7 @@ public class TableModel extends AbstractTableModel {
             case 12 : return employeeModel.getStreetNumber();
             case 13 : return employeeModel.getWorkType();
             case 14 : return employeeModel.getDriverSpecialLicense()? "oui" : "non";
-            case 15 : return employeeModel.getZoneInCharge()? "oui" : "non";
+            case 15 : return employeeModel.getLeader()? "oui" : "non";
             case 16 : return employeeModel.getWorkShopModel().getPlace();
             case 17 : return employeeModel.getStationModel().getLabelStation();
             case 18 : return employeeModel.getInCharge().getLastName() + " "+ employeeModel.getInCharge().getFirstName();

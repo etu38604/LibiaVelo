@@ -49,7 +49,7 @@ public class DeletePanel extends JPanel {
         identifiantLabel = new JLabel("Identifiant : ");
         identifiantLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         informationsPanel.add(identifiantLabel);
-        identifiantText = new JTextField(employeeDelete.getIdEmployee());
+        identifiantText = new JTextField(Integer.toString(employeeDelete.getIdEmployee()));
         identifiantText.setHorizontalAlignment(SwingConstants.LEFT);
         identifiantText.setEditable(false);
         informationsPanel.add(identifiantText);

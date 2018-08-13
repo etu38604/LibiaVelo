@@ -2,6 +2,9 @@ package ViewPackage;
 
 import ExceptionPackage.ConnectionException;
 import ModelPackage.EmployeeModel;
+import ModelPackage.WorkShopModel;
+import com.sun.org.apache.xpath.internal.operations.And;
+import com.sun.org.apache.xpath.internal.operations.String;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Insert2Panel extends JPanel {
 
@@ -21,13 +26,50 @@ public class Insert2Panel extends JPanel {
     private JSpinner hiringSpinner;
     private JComboBox fonctionCombo,zoneCombo,workShopCombo;
     private JCheckBox partialCheck,responsableCheck,licenseCheck,workShopCheck;
+    private EmployeeModel employeeData;
+    private Boolean updateBool;
+    private java.lang.String id;
+    private java.lang.String phonePro;
+    private java.lang.String workshop;
+    private SpinnerDateModel hiring;
+    private GregorianCalendar hiringGreg;
+    private Date hiringDate;
+    private WorkShopModel workShopModel;
+    private java.lang.String [] fonction ={"préposé","transporteur","réparateur","administratif"};
+    private java.lang.String [] zone ={"Namur-Centre","Jambes","Salzinnes","Namur-Bomel"};
 
 
-    public Insert2Panel(LayoutWindow layoutWindow){
+
+    public Insert2Panel(LayoutWindow layoutWindow,EmployeeModel employeeListing) throws ConnectionException{
 
         this.layoutWindow = layoutWindow;
         container = layoutWindow.getContentPane();
         container.removeAll();
+
+        id = new java.lang.String();
+        phonePro = new java.lang.String();
+        workshop = new java.lang.String();
+        hiring = new SpinnerDateModel();
+
+
+        this.updateBool = updateBool;
+        this.employeeData = employeeListing;
+
+
+        if (updateBool)
+        {
+
+            id = Integer.toString(employeeData.getIdEmployee());
+            phonePro = Integer.toString(employeeData.getPhonePrivate());
+
+            hiringDate = new java.sql.Date(employeeData.getDateHiring().getTimeInMillis());
+            hiring.setValue(hiringDate);
+
+            workshop = Integer.toString(employeeData.getLocalityModel().getPostalCode())+" "+employeeData.getLocalityModel().getLabelLocality();
+
+        } else
+            id = Integer.toString(employeeData.getIdEmployee());
+
 
         // Boutons
         panelBoutton = new JPanel();
@@ -59,7 +101,7 @@ public class Insert2Panel extends JPanel {
         idLabel = new JLabel("Identifiant : ");
         idLabel.setHorizontalAlignment(SwingConstants.LEFT);
         panelIdentifiant.add(idLabel);
-        idText = new JTextField();
+        idText = new JTextField(id);
         idText.setEditable(false);
         idText.setHorizontalAlignment(SwingConstants.LEFT);
         panelIdentifiant.add(idText);
@@ -83,7 +125,7 @@ public class Insert2Panel extends JPanel {
         hiringLabel.setHorizontalAlignment(SwingConstants.RIGHT);  //Spiner hiring date
         panelInformation.add(hiringLabel);
         hiringSpinner = new JSpinner();
-        hiringSpinner.setModel(new SpinnerDateModel());
+        hiringSpinner.setModel(hiring);
         JSpinner.DateEditor editor = new JSpinner.DateEditor(hiringSpinner,"dd/MM/yyyy");
         hiringSpinner.setEditor(editor);
         panelInformation.add(hiringSpinner);
@@ -91,44 +133,48 @@ public class Insert2Panel extends JPanel {
         phoneProLabel = new JLabel("Téléphone professionnel : ");
         phoneProLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformation.add(phoneProLabel);
-        phoneProText = new JTextField();
+        phoneProText = new JTextField(phonePro);
         phoneProText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformation.add(phoneProText);
 
         fonctionLabel = new JLabel("Fonction : ");
         fonctionLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformation.add(fonctionLabel);
-        String [] valuesFonction = {"Préposé","Chef Atelier"};
-        fonctionCombo = new JComboBox(valuesFonction);     // ComboBox Fonction
+        fonctionCombo = new JComboBox(fonction);     // ComboBox Fonction
         fonctionCombo.setMaximumRowCount(5);
-        fonctionCombo.setSelectedItem("Préposé");
         fonctionCombo.setAutoscrolls(true);
         FonctionListener fonctionListener = new FonctionListener();
         fonctionCombo.addItemListener(fonctionListener);
         panelInformation.add(fonctionCombo);
-
+                                                                    // CheckBox
         partialCheck = new JCheckBox("Temps partiel");
         partialCheck.setHorizontalAlignment(SwingConstants.CENTER);
-        panelInformation.add(partialCheck);
-
         licenseCheck = new JCheckBox("Permis plateau");
         licenseCheck.setHorizontalAlignment(SwingConstants.CENTER);
-        panelInformation.add(licenseCheck);
-
         responsableCheck = new JCheckBox("Responsable Zone");
         responsableCheck.setHorizontalAlignment(SwingConstants.CENTER);
-        panelInformation.add(responsableCheck);
-
         workShopCheck = new JCheckBox("Chef Atelier");
         workShopCheck.setHorizontalAlignment(SwingConstants.CENTER);
+
+        if (updateBool)
+        {
+            if (employeeData.getPartTimeWork()) partialCheck.isSelected();
+            if (employeeData.getDriverSpecialLicense()) licenseCheck.isSelected();
+            if (employeeData.getLeader()) And(fonction == "réparateur")
+            {
+                responsableCheck.isSelected();
+            }
+        }
+
+        panelInformation.add(partialCheck);
+        panelInformation.add(licenseCheck);
+        panelInformation.add(responsableCheck);
         panelInformation.add(workShopCheck);
 
         zoneLabel = new JLabel("Zone : ");
         zoneLabel.setHorizontalAlignment(SwingConstants.RIGHT);    //ComboBox Zone
         panelInformation.add(zoneLabel);
-        String [] values ={"Grognon","Plante"};
-        zoneCombo = new JComboBox(values);
-        zoneCombo.setSelectedItem("Grognon");
+        zoneCombo = new JComboBox(zone);
         zoneCombo.setMaximumRowCount(5);
         zoneCombo.setAutoscrolls(true);
         panelInformation.add(zoneCombo);
@@ -164,8 +210,9 @@ public class Insert2Panel extends JPanel {
 
                 if (e.getSource() == returns) {
 
-                    EmployeeModel employeeModel = new EmployeeModel();
-                    Insert1Panel insert1Panel = new Insert1Panel(layoutWindow, employeeModel);
+
+                    Boolean upDateBool = true;
+                    Insert1Panel insert1Panel = new Insert1Panel(layoutWindow, employeeData,upDateBool);
 
                 }
 
