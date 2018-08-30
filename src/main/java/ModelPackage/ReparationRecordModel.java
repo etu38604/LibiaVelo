@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 public class ReparationRecordModel {
 
     private Integer idReparation;
+    private Boolean isValidate;
     private GregorianCalendar dateBegin;
     private GregorianCalendar dateEnd;
     private String note;
@@ -77,5 +78,13 @@ public class ReparationRecordModel {
 
     public void setWorkShopModel(WorkShopModel workShopModel) {
         this.workShopModel = workShopModel;
+    }
+
+    public Boolean getValidate() {
+        return isValidate;
+    }
+
+    public void setValidate(Boolean validate) {
+        isValidate = validate;
     }
 }

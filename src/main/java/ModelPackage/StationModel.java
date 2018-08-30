@@ -15,6 +15,7 @@ public class StationModel {
     private String zone;
     private GregorianCalendar dateCreation;
     private Boolean isCover;
+    private ZoneModel zoneModel;
     private LocalityModel localityModel;
 
     public StationModel () {}
@@ -113,5 +114,13 @@ public class StationModel {
 
     public void setZone(String zone) {
         this.zone = zone;
+    }
+
+    public ZoneModel getZoneModel() {
+        return zoneModel;
+    }
+
+    public void setZoneModel(ZoneModel zoneModel) {
+        this.zoneModel = zoneModel;
     }
 }

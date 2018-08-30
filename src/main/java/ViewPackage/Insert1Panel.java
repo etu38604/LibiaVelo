@@ -1,10 +1,11 @@
 package ViewPackage;
 
-import DataAccessPackage.EmployeeDataAccess;
-import DataAccessPackage.LocalityDataAccess;
+import ControllerPackage.Controller;
 import ExceptionPackage.ConnectionException;
+import ExceptionPackage.ValidatorException;
 import ModelPackage.EmployeeModel;
 import ModelPackage.LocalityModel;
+import ValidatorPackage.Validator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,8 +18,10 @@ import java.util.GregorianCalendar;
 public class Insert1Panel extends JPanel {
 
     private Container container;
+    private Controller controller;
+    private Validator validator;
     private JButton cancel,next;
-    private JLabel idLabel,fnameLabel,lnameLabel,inameLabel,birthdayLabel,mailLabel,phoneLabel,cityLabel,numberLabel,streetLabel,titleLabel;
+    private JLabel idLabel,fnameLabel,lnameLabel,inameLabel,birthdayLabel,mailLabel,phoneLabel,cityLabel,numberLabel,streetLabel,titleLabel,noteLabel;
     private JTextField idText,fnameText,lnameText,inameText,mailText,phoneText,streetText,numberText;
     private JSpinner birthdaySpinner;
     private JComboBox cityCombo;
@@ -28,21 +31,21 @@ public class Insert1Panel extends JPanel {
     private ArrayList<LocalityModel> listLocality;
     private ArrayList<EmployeeModel> employeeArray;
     private String id,lastName,firstName,initialName,email,phonePrivate,street,streetNumber,locality;
-    private Boolean updateBool;
+    private Boolean updateBool,returnBool;
     private SpinnerDateModel birthday;
     private GregorianCalendar birthdayGreg;
     private Date birthdayDate;
     private LocalityModel localitySelect;
-    private LocalityDataAccess localityDataAccess;
 
 
-    public Insert1Panel(LayoutWindow layoutWindow,EmployeeModel employeeListing,Boolean updateBool) throws ConnectionException{
+
+    public Insert1Panel(LayoutWindow layoutWindow,EmployeeModel employeeListing,Boolean updateBool,Boolean returnBool) throws ConnectionException{
 
         this.layoutWindow = layoutWindow;
         container = layoutWindow.getContentPane();
         container.removeAll();
+        controller = new Controller();
 
-        EmployeeDataAccess employeeDataAccess = new EmployeeDataAccess();
 
 
 
@@ -59,10 +62,11 @@ public class Insert1Panel extends JPanel {
 
 
         this.updateBool = updateBool;
+        this.returnBool = returnBool;
         this.employeeData = employeeListing;
 
 
-        if (updateBool)
+        if (updateBool || returnBool)
         {
 
             id = Integer.toString(employeeData.getIdEmployee());
@@ -70,7 +74,12 @@ public class Insert1Panel extends JPanel {
             firstName = employeeData.getFirstName();
             initialName = employeeData.getInitialNameSupp();
             email = employeeData.getMail();
-            phonePrivate = Integer.toString(employeeData.getPhonePrivate());
+
+            if (employeeData.getPhonePrivate() != null)
+            {
+                phonePrivate = Integer.toString(employeeData.getPhonePrivate());
+            }
+
             street = employeeData.getStreet();
             streetNumber = Integer.toString(employeeData.getStreetNumber());
 
@@ -81,12 +90,14 @@ public class Insert1Panel extends JPanel {
 
         } else
         {
-            employeeArray = employeeDataAccess.employeeListing();
+           employeeArray = controller.employeeListing();
             id = Integer.toString(employeeArray.size() + 1);
+
+
         }
 
 
-        // Boutons
+        // Buttons
         panelBoutton = new JPanel();
         panelBoutton.setLayout(new FlowLayout());
         cancel = new JButton("Annuler");
@@ -117,12 +128,27 @@ public class Insert1Panel extends JPanel {
         idText = new JTextField(id);
         idText.setEditable(false);
         idText.setHorizontalAlignment(SwingConstants.CENTER);
-        panelIdentifiant.add(idText);
+
+                                // Id visible only with update otherwise size not equal with id if delete
+        if (updateBool)
+        {
+            panelIdentifiant.add(idText);
+        }
+
 
         titlePanel = new JPanel();
         titlePanel.setLayout(new FlowLayout());
 
-        titleLabel = new JLabel("Ajout d'un employé --- Données privées");
+        String title;
+
+        if (updateBool)
+        {
+            title = ("Modification d'un employé --- Données privées");
+        } else
+        {
+            title = ("Ajout d'un employé --- Données privées");
+        }
+        titleLabel = new JLabel(title);
         titlePanel.add(titleLabel);
 
         northPanel.add(panelIdentifiant,BorderLayout.WEST);
@@ -131,17 +157,17 @@ public class Insert1Panel extends JPanel {
         //Information panel
 
         panelInformations = new JPanel();
-        panelInformations.setLayout(new GridLayout(9,4,5,5));
+        panelInformations.setLayout(new GridLayout(10,4,5,5));
 
 
-        lnameLabel = new JLabel("Nom : ");
+        lnameLabel = new JLabel("Nom* : ");
         lnameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(lnameLabel);
         lnameText = new JTextField(lastName);
         lnameText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(lnameText);
 
-        fnameLabel = new JLabel("Prénom : ");
+        fnameLabel = new JLabel("Prénom* : ");
         fnameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(fnameLabel);
         fnameText = new JTextField(firstName);
@@ -155,7 +181,7 @@ public class Insert1Panel extends JPanel {
         inameText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(inameText);
 
-        birthdayLabel = new JLabel("Date de naissance : ");
+        birthdayLabel = new JLabel("Date de naissance* : ");
         birthdayLabel.setHorizontalAlignment(SwingConstants.RIGHT);   //JSpinner Date
         panelInformations.add(birthdayLabel);
         birthdaySpinner = new JSpinner();
@@ -180,12 +206,11 @@ public class Insert1Panel extends JPanel {
         phoneText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(phoneText);
 
-        cityLabel = new JLabel("Ville : ");
+        cityLabel = new JLabel("Ville* : ");
         cityLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(cityLabel);
-        localityDataAccess = new LocalityDataAccess();
         cityCombo = new JComboBox();
-        listLocality = localityDataAccess.getAllLocality();
+        listLocality = controller.getAllLocality();
         listLocality.forEach((AllLocality) -> {
             cityCombo.addItem(AllLocality.getPostalCode() +" "+AllLocality.getLabelLocality());
         });
@@ -195,19 +220,23 @@ public class Insert1Panel extends JPanel {
 
         panelInformations.add(cityCombo);
 
-        streetLabel = new JLabel("Rue : ");
+        streetLabel = new JLabel("Rue* : ");
         streetLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(streetLabel);
         streetText = new JTextField(street);
         streetText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(streetText);
 
-        numberLabel = new JLabel("Numéro : ");
+        numberLabel = new JLabel("Numéro* : ");
         numberLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         panelInformations.add(numberLabel);
         numberText = new JTextField(streetNumber);
         numberText.setHorizontalAlignment(SwingConstants.LEFT);
         panelInformations.add(numberText);
+
+        noteLabel = new JLabel(" * Champs obligatoires");
+        noteLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        panelInformations.add(noteLabel);
 
 
 
@@ -231,33 +260,67 @@ public class Insert1Panel extends JPanel {
 
         public void actionPerformed(ActionEvent e) {
 
+            validator = new Validator();
+
            try {
                if (e.getSource() == cancel) {
                    WelcomePanel welcomePanel = new WelcomePanel(layoutWindow);
                }
                if (e.getSource() == next) {
 
-                   employeeData.setIdEmployee(Integer.parseInt(idText.getText()));
-                   employeeData.setLastName(lnameText.getText());
-                   employeeData.setFirstName(fnameText.getText());
-                   employeeData.setInitialNameSupp(inameText.getText());
-                   employeeData.setMail(mailText.getText());
-                   employeeData.setPhonePrivate(Integer.parseInt(phoneText.getText()));
-                   employeeData.setStreet(streetText.getText());
-                   employeeData.setStreetNumber(Integer.parseInt(numberText.getText()));
+                   try {
 
-                   localitySelect = localityDataAccess.getLocality(cityCombo.getSelectedIndex() + 1);
-                   employeeData.setLocalityModel(localitySelect);
+                       employeeData.setIdEmployee(Integer.parseInt(idText.getText()));
+                       employeeData.setLastName(lnameText.getText());
+                       employeeData.setFirstName(fnameText.getText());
+                       // Management facultatif
+                       if (inameText.getText().trim().isEmpty()) {
+                           employeeData.setInitialNameSupp(null);
+                       } else {
+                           employeeData.setInitialNameSupp(inameText.getText());
+                       }
 
-                   birthdayGreg = new GregorianCalendar();
-                   birthdayGreg.setTime((Date) birthdaySpinner.getValue());
-                   employeeData.setBirthday(birthdayGreg);
 
-                   Insert2Panel insert2Panel = new Insert2Panel(layoutWindow, employeeData);
+                       if (mailText.getText().trim().isEmpty()) {
+                           employeeData.setMail(null);
+                       } else {
+                           employeeData.setMail(mailText.getText());
+                       }
+
+
+                       employeeData.setStreet(streetText.getText());
+                       validator.controlTextRequiredNumber(numberText.getText(),"Numéro de maison");
+                       employeeData.setStreetNumber(Integer.parseInt(numberText.getText()));
+
+                       validator.controlTextNumber(phoneText.getText(),"Numéro de téléphonne privé");
+
+                       if (phoneText.getText().isEmpty())
+                       {
+                           employeeData.setPhonePrivate(null);
+                       } else
+                       {
+                           employeeData.setPhonePrivate(Integer.parseInt(phoneText.getText()));
+                       }
+
+
+                       localitySelect = controller.getLocality(cityCombo.getSelectedIndex() + 1);
+                       employeeData.setLocalityModel(localitySelect);
+
+                       birthdayGreg = new GregorianCalendar();
+                       birthdayGreg.setTime((Date) birthdaySpinner.getValue());
+                       employeeData.setBirthday(birthdayGreg);
+
+
+                       Insert2Panel insert2Panel = new Insert2Panel(layoutWindow, employeeData, updateBool, returnBool);
+                   } catch (ValidatorException ve)
+                   {
+                       JOptionPane.showMessageDialog(null,"Erreur de validation : " + ve.toString(),"Exception",JOptionPane.ERROR_MESSAGE);
+                   }
 
                }
            } catch (ConnectionException ex)
            {
+               JOptionPane.showMessageDialog(null,"Erreur de connexion : " + ex.toString(),"Exception",JOptionPane.ERROR_MESSAGE);
                System.out.println("Erreur de connexion : " + ex);
            }
         }

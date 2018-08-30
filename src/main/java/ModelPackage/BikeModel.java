@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 public class BikeModel {
 
     private Integer idBike;
-    private Boolean idDamaged;
+    private Boolean isDamaged;
     private GregorianCalendar datePurchase;
     private EntrepriseModel entrepriseModel;
     private StationModel stationModel;
@@ -22,12 +22,12 @@ public class BikeModel {
         this.idBike = idBike;
     }
 
-    public Boolean getIdDamaged() {
-        return idDamaged;
+    public Boolean getIsDamaged() {
+        return isDamaged;
     }
 
-    public void setIdDamaged(Boolean idDamaged) {
-        this.idDamaged = idDamaged;
+    public void setIsDamaged(Boolean isDamaged) {
+        this.isDamaged = isDamaged;
     }
 
     public GregorianCalendar getDatePurchase() {

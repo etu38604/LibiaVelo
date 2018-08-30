@@ -1,6 +1,5 @@
 package ModelPackage;
 
-import javax.swing.tree.TreeNode;
 import java.util.GregorianCalendar;
 
 public class TransportOrderModel {
@@ -13,6 +12,7 @@ public class TransportOrderModel {
     private StationModel stationIssuance;
     private StationModel stationOrigin;
     private StationModel stationDestination;
+    private WorkShopModel workShopModel;
 
     public TransportOrderModel () {}
 
@@ -78,5 +78,13 @@ public class TransportOrderModel {
 
     public void setStationDestination(StationModel stationDestination) {
         this.stationDestination = stationDestination;
+    }
+
+    public WorkShopModel getWorkShopModel() {
+        return workShopModel;
+    }
+
+    public void setWorkShopModel(WorkShopModel workShopModel) {
+        this.workShopModel = workShopModel;
     }
 }

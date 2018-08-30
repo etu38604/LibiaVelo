@@ -5,35 +5,42 @@ Drop table historical;
 Drop table reparation_record;
 Drop table bike;
 Drop table station;
+Drop table zone;
 Drop table workshop;
 Drop table entreprise;
 Drop table locality;
 
 
 create table Locality (
-	id int not null,
-    noun varchar(45) not null,
+	id int not null auto_increment,
+    label varchar(45) not null,
     postalCode int not null,
     constraint idLocality_pk primary key (id),
-    constraint locality_nounPostalCode_unique unique (noun,postalCode) )
+    constraint locality_nounPostalCode_unique unique (label,postalCode) )
     ENGINE = InnoDB ;
     
     create table Entreprise (
-	id int not null,
-	noun varchar(45) not null,
+	id int not null auto_increment,
+	label varchar(45) not null,
     location varchar(45) not null,
     constraint idEntreprise_pk primary key(id) )
     ENGINE = InnoDB ;
     
     create table Workshop (
-	id int not null,
+	id int not null auto_increment,
     place varchar(45) not null,
     constraint idWorkshop_pk primary key (id) )
     ENGINE = InnoDB ;
+    
+    create table Zone (
+    id int not null auto_increment,
+    label varchar(45) not null,
+    constraint idZone_pk primary key (id) )
+    ENGINE = InnoDB ;
 
 create table Station (
-	id int not null,
-    noun varchar(45) not null,
+	id int not null auto_increment,
+    label varchar(45) not null,
     nbBikeMinWarn int not null,
     nbBikeMinContr int not null,
     nbBikeMaxWarn int not null,
@@ -43,16 +50,18 @@ create table Station (
     coordGPS varchar(45),
     street varchar(45) not null,
     id_Locality int not null,
+    id_Zone int not null,
     constraint idStation_PK primary key (id),
     constraint Station_nbBikeMin_check check(nbBikeMinWarn > nbBikeMinContr),
     constraint Station_nbBikeMax_check check(nbBikeMaxWarn < nbBikeMaxContr),
-    constraint Station_id_Locality_FK foreign key (id_Locality) references Locality (id))
+    constraint Station_id_Locality_FK foreign key (id_Locality) references Locality (id),
+    constraint Station_id_Zone_FK foreign key (id_Zone) references Zone (id))
     ENGINE = InnoDB ;
 
 
     
 create table Bike (
-	id int not null,
+	id int not null auto_increment,
     isDamaged boolean not null,
     datePurchase date not null,
     id_Station int,
@@ -63,11 +72,12 @@ create table Bike (
     ENGINE = InnoDB ;
     
 create table Reparation_record (
-	id int not null,
+	id int not null auto_increment,
+    isValidate boolean not null,
     dateBegin date not null,
     dateEnd date not null,
     note varchar(45),
-    workOrdrer varchar(45),
+    workOrder varchar(45),
     isDownGraded boolean not null,
     id_Bike int not null,
     id_Workshop int,
@@ -89,7 +99,7 @@ create table Historical (
     ENGINE = InnoDB ;
     
 create table Employee (
-	id int not null,
+	id int not null auto_increment,
     lastName varchar(45) not null,
     firstName varchar(45) not null,
     initialNameSupp char(3),
@@ -103,29 +113,33 @@ create table Employee (
     streetNumber int not null,
     workType varchar(45) not null,
     isDriverSpecialLicense boolean,
-    isZoneInCharge boolean,
+    isLeader boolean,
     id_Workshop int,
     id_Station int,
     id_Locality int not null,
+    id_Zone int,
     inCharge_Employee int,
     constraint idEmployee_pk primary key (id),
     constraint employee_id_Workshop_FK foreign key (id_Workshop) references Workshop (id),
 	constraint employee_id_Station_FK foreign key (id_Station) references Station (id),
-	constraint employe_id_Locality_FK foreign key (id_Locality) references Locality (id),
-	constraint employe_inCharge_Employee_FK foreign key (inCharge_Employee) references Employee (id))
+	constraint employee_id_Locality_FK foreign key (id_Locality) references Locality (id),
+	constraint employee_inCharge_Employee_FK foreign key (inCharge_Employee) references Employee (id) on delete cascade,
+    constraint employee_id_Zone_FK foreign key (id_Zone) references Zone (id))
     ENGINE = InnoDB ;
     
 create table Transport_Order (
-	id int not null,
+	id int not null auto_increment,
     dateTransport date not null,
     id_Bike int not null,
     id_Employee int not null,
     id_Station_issuance int not null,
     id_Station_origin int,
     id_Station_destination int,
+    id_Workshop int,
     constraint idTransport_PK primary key(id),
     constraint transport_id_Bike_FK foreign key (id_Bike) references Bike (id),
 	constraint transport_id_Station_FK foreign key (id_Station_issuance) references Station (id),
-	constraint transport_id_Employee_FK foreign key (id_Employee) references Employee (id))
+	constraint transport_id_Employee_FK foreign key (id_Employee) references Employee (id) on delete cascade,
+    constraint transport_id_Workshop_FK foreign key (id_Workshop) references Workshop (id))
     ENGINE = InnoDB ;
     

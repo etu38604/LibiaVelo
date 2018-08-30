@@ -1,5 +1,6 @@
 package ViewPackage;
 
+import ControllerPackage.Controller;
 import ExceptionPackage.ConnectionException;
 import ModelPackage.EmployeeModel;
 
@@ -7,14 +8,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class DeletePanel extends JPanel {
 
     private Container container;
-    private JPanel buttonPanel,informationsPanel;
+    private Controller controller;
+    private JPanel buttonPanel,informationsPanel,titlePanel,notePanel,centerPanel;
     private JButton cancelButton,deleteButton;
-    private JLabel identifiantLabel,fonctionLabel,lastNameLabel,firstNameLabel;
+    private JLabel identifiantLabel,fonctionLabel,lastNameLabel,firstNameLabel,titleLabel,noteLabel;
     private JTextField identifiantText,fonctionText,lastNameText,firstNameText;
     private LayoutWindow layoutWindow;
     private EmployeeModel employeeDelete;
@@ -24,6 +25,12 @@ public class DeletePanel extends JPanel {
         this.layoutWindow = layoutWindow;
         container = layoutWindow.getContentPane();
         container.removeAll();
+        controller = new Controller();
+
+        titlePanel = new JPanel();
+        titlePanel.setLayout(new FlowLayout());
+        titleLabel = new JLabel("  Suppression d'un employé  ");
+        titlePanel.add(titleLabel);
 
         // Button Panel
         buttonPanel = new JPanel();
@@ -44,7 +51,7 @@ public class DeletePanel extends JPanel {
         this.employeeDelete = employeeDelete;
 
         informationsPanel = new JPanel();
-        informationsPanel.setLayout(new GridLayout(4,2,10,100));
+        informationsPanel.setLayout(new GridLayout(4,2,10,25));
 
         identifiantLabel = new JLabel("Identifiant : ");
         identifiantLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -78,7 +85,19 @@ public class DeletePanel extends JPanel {
         firstNameText.setEditable(false);
         informationsPanel.add(firstNameText);
 
-        container.add(informationsPanel,BorderLayout.CENTER);
+        notePanel = new JPanel();
+        notePanel.setLayout(new FlowLayout());
+        noteLabel = new JLabel(" * Un grand patron ne peut être supprimé ");
+        noteLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        notePanel.add(noteLabel);
+
+        centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout(20,50));
+        centerPanel.add(informationsPanel,BorderLayout.CENTER);
+        centerPanel.add(notePanel,BorderLayout.SOUTH);
+
+        container.add(titlePanel,BorderLayout.NORTH);
+        container.add(centerPanel,BorderLayout.CENTER);
         container.add(buttonPanel,BorderLayout.SOUTH);
 
         layoutWindow.getContentPane().repaint();
@@ -95,21 +114,33 @@ public class DeletePanel extends JPanel {
             try {
 
                 if (e.getSource() == cancelButton) {
-                    ListingPanel listingPanel = new ListingPanel(layoutWindow);
+                    ListingPanel listingPanel = new ListingPanel(layoutWindow,true,false,false,null,null,null);
                 }
 
                 if (e.getSource() == deleteButton) {
                     int ok = JOptionPane.showConfirmDialog(null, "Voulez vous vraiment supprimer cet employé ?", "Confirmation", JOptionPane.YES_NO_OPTION);
-                    System.out.println(ok);
 
                     if (ok == 0) {
-                        WelcomePanel welcomePanel = new WelcomePanel(layoutWindow);
+
+                        Boolean modification = controller.deleteEmployee(employeeDelete.getIdEmployee());
+
+                        if (modification)
+                        {
+                            JOptionPane.showMessageDialog(null,"Employe " + employeeDelete.getLastName()+ " "+employeeDelete.getFirstName()+" bien supprimé !");
+                            WelcomePanel welcomePanel = new WelcomePanel(layoutWindow);
+                        } else
+                        {
+                            JOptionPane.showMessageDialog(null,"Erreur lors de la suppression","Erreur",JOptionPane.ERROR_MESSAGE);
+                        }
+
                     }
 
 
                 }
             }
-            catch (ConnectionException ex){
+            catch (ConnectionException ex)
+            {
+                JOptionPane.showMessageDialog(null,"Erreur de connexion : " + ex.toString(),"Exception",JOptionPane.ERROR_MESSAGE);
                 System.out.println("Erreur de connexion : " + ex);
             }
 

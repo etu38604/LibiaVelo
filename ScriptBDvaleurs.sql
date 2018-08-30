@@ -1,17 +1,20 @@
 insert into locality
 	values (1,'Namur',5000),(2,'Jambes',5100),(3,'Gembloux',5030),(4,'Godinne',5530);
     
+insert into zone
+	values (1,'Namur-Centre'),(2,'Bomel'),(3,'Jambes');
+    
 insert into station
-	values (1,'Grognon',5,2,10,12,str_to_date('10-oct-2002','%e-%b-%Y'),true,null,'Rue Fernand Golenvaux',1),
-    (2,'Maurice Servais',4,2,8,10,str_to_date('22-apr-2005','%e-%b-%Y'),false,null,'Rue des Brasseurs',1),
-    (3,'Piscine de Jambes',5,3,12,14,str_to_date('01-jul-2012','%e-%b-%Y'),true,null,'Rue de Enhaive',2);
+	values (1,'Grognon',5,2,10,12,str_to_date('10-oct-2002','%e-%b-%Y'),true,null,'Rue Fernand Golenvaux',1,1),
+    (2,'Maurice Servais',4,2,8,10,str_to_date('22-apr-2005','%e-%b-%Y'),false,null,'Rue des Brasseurs',1,1),
+    (3,'Piscine',5,3,12,14,str_to_date('01-jul-2012','%e-%b-%Y'),true,null,'Rue de Enhaive',2,3);
 
 insert into entreprise
 	values (1,'Scott','Scotland'),(2,'Merckx','Belgium'),(3,'La Pierre','USA');
 
 insert into employee 
-	values (1,'Minet','Martin',null,str_to_date('01-jan-2000','%e-%b-%Y'),0499872360,081452653,'martin.minet@gmail.be',str_to_date('14-jun-1992','%e-%b-%Y'),false,'rue du chateau',5,'Préposé',null,true,null,2,4,null),
-    (2,'Morre','Anthony','M',str_to_date('06-aug-2012','%e-%b-%Y'),0491549679,081648511,'anthony.morre@gmail.be',str_to_date('02-dec-1992','%e-%b-%Y'),false,'rue olympique',13,'Transporteur',True,null,null,null,3,1);
+	values (1,'Minet','Martin',null,str_to_date('01-jan-2000','%e-%b-%Y'),0499872360,081452653,'martin.minet@gmail.be',str_to_date('14-jun-1992','%e-%b-%Y'),false,'rue du chateau',5,'Préposé',null,true,null,2,4,1,null),
+    (2,'Morre','Anthony','M',str_to_date('06-aug-2012','%e-%b-%Y'),0491549679,081648511,'anthony.morre@gmail.be',str_to_date('02-dec-1992','%e-%b-%Y'),false,'rue olympique',13,'Transporteur',True,null,null,null,3,null,1);
     
     
 insert into bike

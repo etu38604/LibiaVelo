@@ -7,13 +7,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class LayoutWindow extends JFrame {
 
     private Container myContainer;
     private JMenu menuMenu,menuWorking,menuSearch;
     private JMenuBar menuBar;
-    private JMenuItem homePage,insert,listing,exit,searchItem;
+    private JMenuItem homePage,insert,listing,exit,searchItem,jobListing;
     private WelcomePanel welcomePanel;
     private Insert1Panel insert1Panel;
     private SearchPanel searchPanel;
@@ -24,6 +26,13 @@ public class LayoutWindow extends JFrame {
     public LayoutWindow(){
 
         super("Libia Velo");
+
+        addWindowListener(new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
 
         // Region MenuBare
 
@@ -51,7 +60,11 @@ public class LayoutWindow extends JFrame {
         menuMenu.add(exit);
 
         menuWorking = new JMenu("Metier");
+        jobListing = new JMenuItem("Ordres de réparation en attentes");
+        jobListing.addActionListener(barListener);
+        menuWorking.add(jobListing);
         menuBar.add(menuWorking);
+
 
         menuSearch = new JMenu("Recherche");
         searchItem = new JMenuItem("Livreurs");
@@ -92,14 +105,21 @@ public class LayoutWindow extends JFrame {
                 {
                     EmployeeModel employeeModel = new EmployeeModel();
                     Boolean upDateBoll = false;
-                    insert1Panel = new Insert1Panel(LayoutWindow.this,employeeModel,upDateBoll);
+                    Boolean returnBool = false;
+                    insert1Panel = new Insert1Panel(LayoutWindow.this,employeeModel,upDateBoll,returnBool);
                 }
                 if (e.getSource() == searchItem)
                     searchPanel = new SearchPanel(LayoutWindow.this);
                 if (e.getSource() == listing)
-                    listingPanel = new ListingPanel(LayoutWindow.this);
+                    listingPanel = new ListingPanel(LayoutWindow.this,true,false,false,null,null,null);
+
+                if(e.getSource() == jobListing)
+                    listingPanel = new ListingPanel(LayoutWindow.this,false,false,true,null,null,null);
+
             }
-            catch (ConnectionException ex) {
+            catch (ConnectionException ex)
+            {
+                JOptionPane.showMessageDialog(null,"Erreur de connexion : " + ex.toString(),"Exception",JOptionPane.ERROR_MESSAGE);
                 System.out.println("Erreur de connexion : " + ex);
             }
 

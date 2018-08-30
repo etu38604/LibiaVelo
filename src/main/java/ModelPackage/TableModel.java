@@ -20,25 +20,26 @@ public class TableModel extends AbstractTableModel {
         //Nomination des colonnes
         this.employeeArray = employeeArray;
         columnLabel = new ArrayList <String>();
-        columnLabel.add("ID");
+        columnLabel.add("ID"); //0
         columnLabel.add("Nom");
         columnLabel.add("Prénom");
         columnLabel.add("Initial prénom supp");
         columnLabel.add("Date embauche");
-        columnLabel.add("Téléphonne Privé");
+        columnLabel.add("Téléphonne Privé"); //5
         columnLabel.add("Téléphonne Professionnel");
         columnLabel.add("Email");
         columnLabel.add("Date naissance");
         columnLabel.add("Temps partiel");
-        columnLabel.add("Localite");
+        columnLabel.add("Localite"); //10
         columnLabel.add("Rue");
         columnLabel.add("Numéro de rue");
         columnLabel.add("Fonction");
         columnLabel.add("Permi plateau");
-        columnLabel.add("EstResponsable");
+        columnLabel.add("EstResponsable"); //15
         columnLabel.add("Numéro de Atelier");
         columnLabel.add("Station attribuée");
-        columnLabel.add("Est sous la responsabilité de");
+        columnLabel.add("Zone attribuée ");
+        columnLabel.add("Est sous la responsabilité de"); //19
 
     }
 
@@ -69,11 +70,21 @@ public class TableModel extends AbstractTableModel {
             case 2: return employeeModel.getFirstName();
             case 3: return employeeModel.getInitialNameSupp();
             case 4: return dateHiring;
-            case 5: return employeeModel.getPhonePrivate();
+            case 5:
+                if (employeeModel.getPhonePrivate() == 0)
+                {
+                    return null;
+                } else
+                return employeeModel.getPhonePrivate();
             case 6: return employeeModel.getPhonePro();
             case 7: return employeeModel.getMail();
             case 8: return birthday;
-            case 9: return employeeModel.getPartTimeWork()? "oui" : "non";
+            case 9:
+                if (employeeModel.getPartTimeWork() == null)
+                {
+                    return null;
+                } else
+                return employeeModel.getPartTimeWork()? "oui" : "non";
             case 10 : return employeeModel.getLocalityModel().getLabelLocality();
             case 11: return employeeModel.getStreet();
             case 12 : return employeeModel.getStreetNumber();
@@ -82,7 +93,13 @@ public class TableModel extends AbstractTableModel {
             case 15 : return employeeModel.getLeader()? "oui" : "non";
             case 16 : return employeeModel.getWorkShopModel().getPlace();
             case 17 : return employeeModel.getStationModel().getLabelStation();
-            case 18 : return employeeModel.getInCharge().getLastName() + " "+ employeeModel.getInCharge().getFirstName();
+            case 18 : return employeeModel.getZoneModel().getLabelZone();
+            case 19 :
+                if (employeeModel.getInCharge().getFirstName() == null)
+                {
+                    return null;
+                } else
+                return employeeModel.getInCharge().getLastName() + " "+ employeeModel.getInCharge().getFirstName();
             default : return null;
         }
     }
@@ -129,6 +146,8 @@ public class TableModel extends AbstractTableModel {
             case 17: c = String.class;
                 break;
             case 18: c = String.class;
+                break;
+            case 19: c = String.class;
                 break;
             default: c= String.class;
         }
